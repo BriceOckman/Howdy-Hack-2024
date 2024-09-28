@@ -2,7 +2,7 @@
 import cv2
 import time
 
-def detect_faces_eyes_from_frame(frame):
+def detect_faces_eyes_from_frame(frame, draw=False):
     
     '''
     input:
@@ -26,8 +26,8 @@ def detect_faces_eyes_from_frame(frame):
 
     # Loop over detected faces
     for (x, y, w, h) in faces:
-        # Draw rectangle around face
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+        if draw: cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
         # Focus on the face region
         roi_gray = gray[y:y+h, x:x+w]
@@ -38,45 +38,63 @@ def detect_faces_eyes_from_frame(frame):
 
         # Check if two eyes are detected
         if len(eyes) == 2:
-            for (ex, ey, ew, eh) in eyes:
-                cv2.rectangle(roi_color, (ex, ey), (ex+ew, ey+eh), (0, 255, 0), 2)
+
+            if draw:
+                for (ex, ey, ew, eh) in eyes:
+                    cv2.rectangle(roi_color, (ex, ey), (ex+ew, ey+eh), (0, 255, 0), 2)
             
             count += 1  # increase count for a successful face+2eyes detection
     
-    cv2.imshow('window-name', frame)
-    print(f', retention: {count}')
-    while cv2.waitKey(10) & 0xFF != ord('q'):
-        pass 
-    return count
+    return count, frame
 
-def get_frames(filename):
+def get_retention(filename, folder=None, step_through=False, debug=False):
     
     '''
     input:
-        filename: video filename
+        filename: string of video file, name + extension
+        folder: string of folder name.
+                when set, individual marked frames will be saved here.
+        step_through: boolean. when set, cv2 will open a marked image
+                      preview window.
+        debug: boolean. when set, retention values will be printed as
+               well as returned.
+
     output:
-        [Image?, ...] list of Image objects (image class unknown)
+        [int, int, int, ...] list of retention values
+
     '''
-    
-    video = cv2.videocapture(filename)
-    success, image = video.read()  # read initial frame
-    while success:  # while frame reading is successful
-        yield image
-        success, image = video.read() 
-
-def main():
-    
-    cap = cv2.VideoCapture('test.mp4')
+    cap = cv2.VideoCapture(filename)
     count = 0
-    while cap.isOpened():
-        ret,frame = cap.read()
-        cv2.imwrite("frame%d.jpg" % count, frame)
-        print(f'Frame Count:{count}',end='')
-        detect_faces_eyes_from_frame(frame)
+    retention_values = []
+
+    status, frame = cap.read()
+    while status:
+        # if user requested to save all frames to folder
+        if folder: cv2.imwrite(os.path.join(folder, "frame%d.jpg" % count), frame)
+
+        # the meat
+        retention, marked_frame = detect_faces_eyes_from_frame(frame, draw=(folder != None or step_through))
+        retention_values.append(retention)
+     
+        # if we're in step_through mode
+        if step_through:   
+            cv2.imshow('frame-by-frame viewer: press n', marked_frame)
+            print(f'Frame Count: {count}, Retention: {retention}')
+            while cv2.waitKey(10) & 0xFF != ord('n'):
+                pass 
+                
         count = count + 1
+        status, frame = cap.read()
+    
+    # if image previews were opened (only possible in step_through mode) 
+    if step_through:
+        cap.release()
+        cv2.destroyAllWindows() # destroy all opened windows
+    
+    if debug:
+        for i in retention_values:
+            print(i, end=', ')
 
+    return retention_values
 
-    cap.release()
-    cv2.destroyAllWindows() # destroy all opened windows
-
-main()
+get_retention('test_video.mp4')

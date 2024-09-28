@@ -1,5 +1,6 @@
 
 import cv2
+import time
 
 def detect_faces_eyes_from_frame(frame):
     
@@ -15,7 +16,7 @@ def detect_faces_eyes_from_frame(frame):
 
     # Load Haar cascades
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+    eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye_tree_eyeglasses.xml')
 
     # Read an image or video frame
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -26,11 +27,11 @@ def detect_faces_eyes_from_frame(frame):
     # Loop over detected faces
     for (x, y, w, h) in faces:
         # Draw rectangle around face
-        cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
         # Focus on the face region
         roi_gray = gray[y:y+h, x:x+w]
-        roi_color = img[y:y+h, x:x+w]
+        roi_color = frame[y:y+h, x:x+w]
 
         # Detect eyes within the face region
         eyes = eye_cascade.detectMultiScale(roi_gray)
@@ -42,6 +43,7 @@ def detect_faces_eyes_from_frame(frame):
             
             count += 1  # increase count for a successful face+2eyes detection
     
+    cv2.imwrite(f'{time.time()}.jpg', frame)
     return count
 
 def get_frames(filename):
@@ -70,6 +72,10 @@ def detect_faces(filename):
     
     return [detect_faces_eyes_from_frame(frame) in get_frames(filename)]
 
-def main():
-    img = cv2.imread('image.jpg')
+def main(i):
+    img = cv2.imread(f'{i}.jpg')
     print(detect_faces_eyes_from_frame(img))
+
+main('test_two')
+main('test_one')
+main('test_zero')

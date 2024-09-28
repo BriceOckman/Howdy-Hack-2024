@@ -1,6 +1,12 @@
 
+# ppt
+import re
+# import xml.etree.ElementTree as ET
+import zipfile
+import os
+
 import cv2
-import time
+import shutil
 
 def detect_faces_eyes_from_frame(frame, draw=False):
     
@@ -97,4 +103,63 @@ def get_retention(filename, folder=None, step_through=False, debug=False):
 
     return retention_values
 
-get_retention('test_video.mp4')
+def clean_up(folderpath):
+    shutil.rmtree(folderpath)
+
+def get_text(filename, debug=False):
+        
+    '''
+    input:
+        filename: string of powerpoint
+
+    '''
+    
+    if '.pptx' not in filename:
+        raise Exception("Invalid filetype .{filename.split('.')[-1]} supported. Only .pptx please!")
+    # return variable
+    slide_script = []
+
+    try:
+        # assuming user inputted a pptx
+        filepath = os.path.join(os.getcwd(), filename)
+        shutil.copy(filepath, filepath+'.zip')
+
+        # make folder by taking filename (split/cut off file extension)
+        folder = os.path.basename(filepath).split('.')[0]
+
+        # if folder exists, delete it
+        if os.path.exists(folder): shutil.rmtree(folder)
+
+        # os.makedirs(folder)
+        folderpath = os.path.join(os.getcwd(), folder)
+        
+        # extract files
+        with zipfile.ZipFile(os.path.join(os.getcwd(), filepath+'.zip'), 'r') as zip_ref:
+            zip_ref.extractall(os.getcwd())
+
+        slidespath = os.path.join(folderpath, 'slides')
+        filenames = [file for file in os.listdir(slidespath) if '.' in file and 'xml' in file]
+        sorted_filenames = sorted(filenames, key=lambda f: int(re.search(r'\d+', f).group()))
+        
+        for file in sorted_filenames:
+            with open(os.path.join(slidespath, file), 'r') as f:
+                content = f.read()
+            pattern = r'<a:t>(.*?)</a:t>'
+            matches = re.findall(pattern, content)
+            slide_script.append(matches)
+            if debug: print(f'{file = } {len(matches) = }')
+        
+            # i believe that only xml files can exist here
+            # this is an warning
+            if 'xml' not in file and debug:
+                print(f'WARNING: non-xml file found: {file}')
+        
+        return slide_script
+
+    except Exception as e:
+        raise e
+
+    finally:
+        clean_up(folderpath)
+
+get_text('test_ppt.pptx')

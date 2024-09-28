@@ -43,7 +43,10 @@ def detect_faces_eyes_from_frame(frame):
             
             count += 1  # increase count for a successful face+2eyes detection
     
-    cv2.imwrite(f'{time.time()}.jpg', frame)
+    cv2.imshow('window-name', frame)
+    print(f', retention: {count}')
+    while cv2.waitKey(10) & 0xFF != ord('q'):
+        pass 
     return count
 
 def get_frames(filename):
@@ -61,21 +64,19 @@ def get_frames(filename):
         yield image
         success, image = video.read() 
 
-def detect_faces(filename):
+def main():
     
-    '''
-    input:
-        filename: video filename
-    output:
-        [int, int, ...] list of faces detected/frame
-    '''
-    
-    return [detect_faces_eyes_from_frame(frame) in get_frames(filename)]
+    cap = cv2.VideoCapture('test.mp4')
+    count = 0
+    while cap.isOpened():
+        ret,frame = cap.read()
+        cv2.imwrite("frame%d.jpg" % count, frame)
+        print(f'Frame Count:{count}',end='')
+        detect_faces_eyes_from_frame(frame)
+        count = count + 1
 
-def main(i):
-    img = cv2.imread(f'{i}.jpg')
-    print(detect_faces_eyes_from_frame(img))
 
-main('test_two')
-main('test_one')
-main('test_zero')
+    cap.release()
+    cv2.destroyAllWindows() # destroy all opened windows
+
+main()

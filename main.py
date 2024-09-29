@@ -1,7 +1,10 @@
 
+# transcript
+import whisper
+import ffmpeg
+
 # ppt
 import re
-# import xml.etree.ElementTree as ET
 import zipfile
 import os
 
@@ -19,6 +22,7 @@ def detect_faces_eyes_from_frame(frame, draw=False):
     '''
     input:
         frame: image
+
     output:
         int, number of faces detected
     '''
@@ -117,6 +121,7 @@ def get_text(filename, debug=False):
     '''
     input:
         filename: string of powerpoint
+        debug: boolean. if set, will print debug information
 
     output:
         [str, str, ...] - list of strings representing a list
@@ -144,9 +149,9 @@ def get_text(filename, debug=False):
         
         # extract files
         with zipfile.ZipFile(os.path.join(os.getcwd(), filepath+'.zip'), 'r') as zip_ref:
-            zip_ref.extractall(os.getcwd())
+            zip_ref.extractall(folderpath)
 
-        slidespath = os.path.join(folderpath, 'slides')
+        slidespath = os.path.join(folderpath, 'ppt', 'slides')
         filenames = [file for file in os.listdir(slidespath) if '.' in file and 'xml' in file]
         sorted_filenames = sorted(filenames, key=lambda f: int(re.search(r'\d+', f).group()))
         
@@ -168,10 +173,31 @@ def get_text(filename, debug=False):
     except Exception as e:
         raise e
 
-    finally:
-        clean_up(folderpath)
+def get_transcript(filename):
+    
+    '''
+    input:
+        filename of video
+    
+    output:
+        list of segments formatted as the following:
+        [[float start, float end, string text], ...]
+        
+    '''
 
-get_text('test_ppt.pptx')
+    # return variables
+    segs = []
+
+    video_filepath = os.path.join(os.getcwd(), filename)
+    audio_filepath = os.path.join(os.getcwd(), 'tmp.wav')
+    ffmpeg.input(video_filepath).output(audio_filepath).run(overwrite_output=True)
+
+    model = whisper.load_model("base")
+    result = model.transcribe(audio_filepath)
+    for seg in result['segments']:
+        segs.append([(seg['start'], seg['end']), seg['text']])
+
+    return segs
 
 def find_unique(slide_text_list):
     '''
@@ -216,4 +242,3 @@ def fuzzy_search(slide_text_list, transcript_text):
                 break
         else:
             indexes.append(index)
-

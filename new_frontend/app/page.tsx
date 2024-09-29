@@ -15,13 +15,19 @@ interface Data {
 const Home = () => {
     const [data, setData] = useState<Data | null>(null);
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-    const [hoveredLineIndex, setHoveredLineIndex] = useState<number | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch('http://localhost:5000/api/data');
-            const result: Data = await response.json();
-            setData(result);
+            try {
+                const response = await fetch('http://localhost:5000/api/data');
+                const result: Data = await response.json();
+                setData(result);
+            } catch (error) {
+                console.error('Fetch error:', error);
+            } finally {
+                setLoading(false);
+            }
         };
         fetchData();
     }, []);
@@ -32,9 +38,10 @@ const Home = () => {
             {
                 label: 'Retention',
                 data: data?.retention || [],
-                borderColor: 'rgba(200, 50, 50, 1)', // Change color for Wild West theme
+                borderColor: 'rgba(100, 150, 200, 1)', // Soft blue for the line
+                backgroundColor: 'rgba(100, 150, 200, 0.2)', // Soft blue fill
                 borderWidth: 2,
-                fill: false,
+                fill: true, // Fill under the line
                 pointHoverRadius: 5,
             },
         ],
@@ -51,25 +58,14 @@ const Home = () => {
                 beginAtZero: true,
             },
         },
-        onHover: (event: any, elements: any) => {
-            if (elements.length) {
-                const index = elements[0].index;
-                setHoveredIndex(index);
-                setHoveredLineIndex(null);
-            } else {
-                setHoveredIndex(null);
-            }
-        },
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    label: (tooltipItem: any) => {
-                        const index = tooltipItem.dataIndex;
-                        return `Slide: ${data?.slides[index] || ''}`;
-                    },
-                },
-            },
-        },
+    };
+
+    const getSlideUrl = (index: number) => {
+        if (!data) return '';
+        const slideIndex = data.slide_changes.findIndex((change, i) => {
+            return (i === 0 && index < change) || (i > 0 && index >= data.slide_changes[i - 1] && index < change);
+        });
+        return slideIndex === -1 ? data.slides[data.slides.length - 1] : data.slides[slideIndex];
     };
 
     const handleMouseMove = (event: React.MouseEvent) => {
@@ -78,12 +74,12 @@ const Home = () => {
         const totalWidth = rect.width;
         const index = Math.floor((x / totalWidth) * (data?.time.length || 1));
 
-        if (data?.slide_changes.includes(data.time[index])) {
-            setHoveredLineIndex(data.time[index]);
-        } else {
-            setHoveredLineIndex(null);
+        if (data) {
+            setHoveredIndex(index);
         }
     };
+
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className={styles.container}>
@@ -102,16 +98,16 @@ const Home = () => {
                             position: 'absolute',
                             left: `${((data.time.indexOf(change) / (data.time.length - 1)) * 100)}%`,
                             height: '100%',
-                            borderLeft: '2px solid red',
+                            borderLeft: '2px solid #d19a6a', // Light brown for slide changes
                             top: 0,
                         }}
                     />
                 ))}
             </div>
-            {(hoveredIndex !== null || hoveredLineIndex !== null) && data && (
+            {hoveredIndex !== null && data && (
                 <div className={styles.imagePopup}>
                     <img
-                        src={hoveredLineIndex !== null ? data.slides[data.time.indexOf(hoveredLineIndex)] : hoveredIndex !== null ? data.slides[hoveredIndex] : ''}
+                        src={getSlideUrl(data.time[hoveredIndex])}
                         alt="Slide Preview"
                     />
                 </div>

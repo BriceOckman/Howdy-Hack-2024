@@ -177,7 +177,9 @@ def find_unique(slide_text_list):
     '''
     parses through slide_text_list and finds unique words on each slide
     '''
-    unique_words_sorted = []
+    
+    # counts the number of each word
+    unique_words = []
     slide_words = "".join(slide_text_list)
     words = re.findall(r'\b\w+\b', slide_words.lower())
     word_counts = (Counter(words))
@@ -186,13 +188,34 @@ def find_unique(slide_text_list):
         temp_list = []
         line_list = line.split(' ')
         for word in line_list:
+            # checks if there's either only one count of the word OR
+            # if all the counts of the word are in the same line
             if 1 == word_counts[word] or word_counts[word] == line_list.count(word):
                 temp_list.append(word)
             
-        unique_words_sorted.append(temp_list)
+        unique_words.append(temp_list)
+    
+    return unique_words
 
 def fuzzy_search(slide_text_list, transcript_text):
     '''
-    
+    uses a fuzzy search to find similar words
     '''
-    pass
+    indexes = []
+    index = 0
+    unique_words = find_unique(slide_text_list)
+    combined_unique = [item for sublist in unique_words for item in sublist]
+    words = transcript_text.split(" ")
+    for word in words:
+        query = word
+        best_match = process.extractOne(query, combined_unique)
+        for temp_index, sublist in enumerate(unique_words):
+            if best_match in sublist:
+                index = temp_index
+                indexes.append(index)
+                break
+        else:
+            indexes.append(index)
+
+
+

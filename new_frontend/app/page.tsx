@@ -32,6 +32,7 @@ const Home = () => {
         fetchData();
     }, []);
 
+    // Define chartData here, after the data has been fetched
     const chartData = {
         labels: data?.time || [],
         datasets: [
@@ -83,7 +84,7 @@ const Home = () => {
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.title}>Wild West Retention Graph</h1>
+            <h1 className={styles.title}>Retention vs. Time Graph</h1>
             <div className={styles.graphContainer} onMouseMove={handleMouseMove}>
                 {data && (
                     <Line

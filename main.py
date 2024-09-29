@@ -307,3 +307,46 @@ def fuzzy_search(slide_text_list, transcript_text):
 # print(find_unique(get_text('test_ppt.pptx')))
 # transcript = get_transcript('test_transcript.mp4')
 # print(fuzzy_search(get_text('test_ppt.pptx'), transcript))
+
+
+## JUSTIN'S SECTION ##
+import os
+from pptx import Presentation
+from pdf2image import convert_from_path
+from tempfile import NamedTemporaryFile
+from pathlib import Path
+
+def pptx_to_png(pptx_path, output_dir):
+    # Load the PowerPoint presentation
+    presentation = Presentation(pptx_path)
+
+    # Create a temporary PDF file
+    with NamedTemporaryFile(suffix=".pdf", delete=False) as temp_pdf:
+        temp_pdf_path = temp_pdf.name
+        # Save the PowerPoint as PDF
+        presentation.save(temp_pdf_path)
+
+    # Convert PDF to images
+    images = convert_from_path(temp_pdf_path)
+
+    # Ensure the output directory exists
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+    # Save each slide as PNG
+    png_files = []
+    for i, image in enumerate(images):
+        png_file = os.path.join(output_dir, f"slide{i + 1}.png")
+        image.save(png_file, 'PNG')
+        png_files.append(png_file)
+
+    # Clean up the temporary PDF file
+    os.remove(temp_pdf_path)
+
+    return png_files
+
+# Example usage
+pptx_path = 'temp_ppt.pptx'  # Replace with your PowerPoint file path
+output_dir = '/new_frontend/public/path/to'            # Specify your desired output directory
+png_files = pptx_to_png(pptx_path, output_dir)
+print("Converted PNG files:", png_files)
+

@@ -33,14 +33,6 @@
 }
 
 .imagePopup {
-    padding: 20px;
-    border: 3px solid #d19a6a; /* Light brown border */
-    border-radius: 5px;
-    background-color: #fff7e1; /* Light cream background */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.imagePopup {
     width: 960px; /* Set width to match PowerPoint slide */
     height: 720px; /* Set height to match PowerPoint slide */
     padding: 10px;
@@ -60,6 +52,7 @@
     object-fit: cover; /* Resize image to cover the box while maintaining aspect ratio */
     border-radius: 5px;
 }
+
 
 
 .chartjs-render-monitor {

@@ -112,6 +112,9 @@ def get_text(filename, debug=False):
     input:
         filename: string of powerpoint
 
+    output:
+        [str, str, ...] - list of strings representing a list
+                          of text from each slide
     '''
     
     if '.pptx' not in filename:

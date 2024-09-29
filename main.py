@@ -12,6 +12,7 @@ import cv2
 import shutil
 
 # for fuzzy search
+import nltk
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import re
@@ -181,7 +182,8 @@ def get_transcript(filename):
     
     output:
         list of segments formatted as the following:
-        [[float start, float end, string text], ...]
+        [[(float start, float end), 
+           string text], ...]
         
     '''
 
@@ -200,45 +202,108 @@ def get_transcript(filename):
     return segs
 
 def find_unique(slide_text_list):
+
     '''
-    parses through slide_text_list and finds unique words on each slide
+    input:
+        slide_text_list : [[str, str, str, ...], ...]
+            each index is a new slide
+            strings are either words or phrases
+
+    output:
+        unique_words : [[str, str, str, ...], ...]
+            each index is a new slide
+            strings are single words
+
+    description:
+        parses through slide_text_list and finds unique words on each slide
+
     '''
+    
+    # return variable
+    unique_words = []
+    
+    # input data massaging
+    # new form : [str, str, ...]
+    #            new words are separated by space
+    
+    slide_text_word_list = [re.sub(r'[^a-zA-Z ]', '', ' '.join(i).lower()) for i in slide_text_list] 
     
     # counts the number of each word
-    unique_words = []
-    slide_words = "".join(slide_text_list)
-    words = re.findall(r'\b\w+\b', slide_words.lower())
-    word_counts = (Counter(words))
+    word_count_per_slide = []
+    for slide_words in slide_text_word_list:
+        words = re.findall(r'\b\w+\b', slide_words.lower())
+        word_count_per_slide.append(Counter(words))
     
-    for line in slide_text_list:
-        temp_list = []
-        line_list = line.split(' ')
-        for word in line_list:
+    global_word_count = sum(word_count_per_slide, start=Counter()) 
+
+    for slide_index, words in enumerate(slide_text_word_list):
+        tmp_list = []
+        for word in words.split():
             # checks if there's either only one count of the word OR
             # if all the counts of the word are in the same line
-            if 1 == word_counts[word] or word_counts[word] == line_list.count(word):
-                temp_list.append(word)
+            if 1 == global_word_count[word] or global_word_count[word] == word_count_per_slide[slide_index][word]:
+                tagged = nltk.pos_tag([word])
+                if tagged[0][1] in ['NN', 'NNS', 'NNP', 'NNPS']:
+                    tmp_list.append(word)
             
-        unique_words.append(temp_list)
+        unique_words.append(tmp_list)
     
     return unique_words
 
 def fuzzy_search(slide_text_list, transcript_text):
+
     '''
-    uses a fuzzy search to find similar words
+    input:
+        slide_text_list : [[str, str, str, ...], ...]
+            each index is a new slide
+            strings are either words or phrases
+        transcript_text: 
+            [[(float start, float end), 
+               string text], ...]
+    
+    output:
+        [[start : float, slide_index : int], ...]
+        meant to be traversed by min bound start until satisfied
+    
+    description:
+        uses a fuzzy search to find similar words
+        
     '''
-    indexes = []
-    index = 0
+
+    # return variable
+    time_to_slide_index = []
+
     unique_words = find_unique(slide_text_list)
-    combined_unique = [item for sublist in unique_words for item in sublist]
-    words = transcript_text.split(" ")
-    for word in words:
-        query = word
-        best_match = process.extractOne(query, combined_unique)
-        for temp_index, sublist in enumerate(unique_words):
-            if best_match in sublist:
-                index = temp_index
-                indexes.append(index)
-                break
-        else:
-            indexes.append(index)
+
+    combined_unique = {}
+    for slide_index, slide_words in enumerate(unique_words):
+        for word in slide_words:
+            combined_unique[word] = slide_index
+
+    # combined_unique = [item for sublist in unique_words for item in sublist]
+    for index, transcript_info in enumerate(transcript_text):
+        line_by_words = []
+        for word in transcript_info[1].split(' '):
+            word = re.sub(r'[^a-zA-Z]', '', word.lower())
+            if word != '':
+                result = process.extractOne(word, list(combined_unique.keys()), score_cutoff=95)
+                if result != None:
+                    best_match, score = result
+                    # print(f'transcript_line_index:{index},start:{transcript_info[0][0]},word:{word},best_match:{best_match},score:{score},slide:{combined_unique[best_match]}')
+                    line_by_words.append(combined_unique[best_match])
+        
+        if len(line_by_words) > 0:
+            # raise Exception(f'ERROR: No words in line of transcript "{transcript_info[2]}" matched with any slide content.')
+            calculated_slide_index, freq = Counter(line_by_words).most_common(1)[0]
+            if len(time_to_slide_index) == 0:
+                last_index = 0
+            else:
+                last_index = time_to_slide_index[-1][1]
+            if abs(calculated_slide_index - last_index) <= 1:
+                time_to_slide_index.append([transcript_info[0][0], calculated_slide_index]) 
+
+    return time_to_slide_index
+
+# print(find_unique(get_text('test_ppt.pptx')))
+# transcript = get_transcript('test_transcript.mp4')
+# print(fuzzy_search(get_text('test_ppt.pptx'), transcript))

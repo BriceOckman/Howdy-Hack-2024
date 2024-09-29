@@ -5,9 +5,8 @@ from collections import Counter
 
 ## pulling audio ##
 
-def extract_audio(mp4_file, audio_path):
-    audio = AudioFileClip(mp4_file)
-    audio.write_audiofile(audio_path)
+def extract_audio(wav_file):
+    audio = AudioFileClip(wav_file)
     return audio.duration
 
 def transcribe_audio(audio_path):
@@ -117,14 +116,13 @@ def output_wpm(wpm):
     else:
         return f'You spoke at {round(wpm)}. Keep up the good pace!'
 
-def main(mp4_file):
-    #audio_path = 'extracted_audio.wav'
+def main(wav_file):
 
     # Extract audio
-    #audio_duration = extract_audio(mp4_file, audio_path)
+    audio_duration = extract_audio(wav_file)
 
     # Transcribe audio
-    transcribed_text = transcribe_audio(audio_path)
+    transcribed_text = transcribe_audio(wav_file)
     print('Transcribed Text:', transcribed_text)
 
     # Analyze speech
@@ -138,4 +136,4 @@ def main(mp4_file):
     print(output_filler(transcribed_text))
 
 
-main('Test_Recording_8.mp4')
+main('extracted_audio.wav')

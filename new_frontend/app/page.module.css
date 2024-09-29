@@ -1,0 +1,46 @@
+/* frontend/app/page.module.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: url('/path-to-your-background-image.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #f0e68c; /* Light yellow text */
+    font-family: 'Georgia', serif;
+    padding: 20px;
+    border: 5px solid #8b4513; /* Saddle brown */
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+}
+
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.graphContainer {
+    width: 80%;
+    max-width: 800px;
+    max-height: 400px;
+    position: relative;
+    margin-bottom: 20px;
+    border: 2px solid #8b4513; /* Saddle brown */
+    background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent background */
+    border-radius: 10px;
+}
+
+.imagePopup {
+    padding: 20px;
+    border: 3px solid #8b4513; /* Saddle brown */
+    border-radius: 5px;
+    background-color: #fffaf0; /* Floral white */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.imagePopup img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}

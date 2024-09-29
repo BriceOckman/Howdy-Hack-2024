@@ -309,7 +309,7 @@ def fuzzy_search(slide_text_list, transcript_text):
 # print(fuzzy_search(get_text('test_ppt.pptx'), transcript))
 
 
-"""## JUSTIN'S SECTION ##
+## JUSTIN'S SECTION ##
 import os
 from pptx import Presentation
 from pdf2image import convert_from_path
@@ -348,5 +348,29 @@ def pptx_to_png(pptx_path, output_dir):
 pptx_path = 'temp_ppt.pptx'  # Replace with your PowerPoint file path
 output_dir = 'new_frontend/public/path/to'            # Specify your desired output directory
 png_files = pptx_to_png(pptx_path, output_dir)
-print("Converted PNG files:", png_files)"""
+print("Converted PNG files:", png_files)
 
+def main(powerpoint_filepath, video_filepath):
+
+    transcript = get_transcript(video_filepath)
+    time_to_slide_index = fuzzy_search(get_text(powerpoint_filepath, transcript), transcript)
+    with open(os.path.join('backend', 'data', 'slides_data.json'), 'r') as f:
+        data = json.loads(f.read())
+
+    retention = get_retention(video_filepath, folder=None, step_through=False, debug=False)
+    
+    frame_rate = get_frame_rate(video_filepath)
+    time = list(numpy.arange(len(retention)) / frame_rate)
+    slide_changes = []
+    last_slide = 0
+    for start, index in time_to_slide_index:
+        if index != last_slide:
+            last_slide = index
+            slide_changes.append(start)
+    
+    data['retention'] = retention
+    data['time'] = time
+    data['slide_changes'] = slide_changes
+    
+    with open(os.path.join('backend', 'data', 'slides_data.json'), 'w') as f:
+        f.write(json.dumps(data))

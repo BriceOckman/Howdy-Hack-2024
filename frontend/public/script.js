@@ -9,17 +9,16 @@ document.getElementById('upload-form').addEventListener('submit', async function
         return;
     }
 
-    // Create FormData object
     const formData = new FormData();
     formData.append('video', videoFile);
     formData.append('presentation', presentationFile);
 
-    // Redirect to loading page
+    // Redirect to loading page (optional)
     window.location.href = 'loading.html';
 
-    // Optionally send to backend here and then redirect to result.html after processing
-    // await fetch('http://your-python-backend-url/upload', {
-    //     method: 'POST',
-    //     body: formData
-    // });
+    // Send files to backend
+    await fetch('/upload', {
+        method: 'POST',
+        body: formData,
+    });
 });

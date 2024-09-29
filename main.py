@@ -18,6 +18,9 @@ from fuzzywuzzy import process
 import re
 from collections import Counter
 
+import numpy
+import json
+
 def detect_faces_eyes_from_frame(frame, draw=False):
     
     '''

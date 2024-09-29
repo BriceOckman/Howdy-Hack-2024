@@ -51,9 +51,14 @@ button:hover {
 }
 
 .loading-container {
-    text-align: center;
-    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full height */
+    margin: 0; /* Remove margin */
 }
+
 
 .loader {
     border: 8px solid #f3f3f3;

@@ -67,21 +67,35 @@ def output_stuttering(transcribed_text):
 
 def output_filler(transcribed_text):
     stutter_analysis = analyze_stuttering_and_filler(transcribed_text)
-    length_filler = len(stutter_analysis['repeated_words'])
+    filler_words = []
+    filler_counts_dict = stutter_analysis['filler_counts']
+    for key, value in filler_counts_dict.items():
+        if value > 0:
+            filler_words.append([key, value])
+    length_filler = len(filler_words)
     if length_filler > 0:
         if length_filler == 1:
-            return f"You said the filler word '{stutter_analysis['filler_counts'][0]}'"
+            get_first_val = filler_words[0][1]
+            if get_first_val == 1:
+                return f"You said the filler word '{filler_words[0][0]}'" + \
+                        f" 1 time. Reducing filler words takes practice; " +\
+                "try pausing briefly when you feel the urge to use them—this gives " + \
+            "you time to think and enhances your clarity!"
+            else:
+                return f"You said the filler word '{filler_words[0][0]}'" + \
+                        f" {filler_words[0][1]} times. Reducing filler words takes practice; " +\
+                "try pausing briefly when you feel the urge to use them—this gives " + \
+            "you time to think and enhances your clarity!"
         else:
             words_string = ''
-            for index, word in enumerate(stutter_analysis['filler_counts']):
-                if index == 0:
-                    words_string += f"'{word}'"
-                elif index == length_filler - 1:
-                    words_string += f", and '{word}'"
-                else:
-                    words_string += f", '{word}'"
+            for sublist in filler_words:
+                words_string += f"\n'{sublist[0]}': {sublist[1]}"
+            
+            words_string += "\nReducing filler words takes practice; " +\
+                "try pausing briefly when you feel the urge to use them—this gives " + \
+            "you time to think and enhances your clarity!"
                 
-            return f"You stuttered on the words {words_string}. "
+            return f"You said the following filler words: {words_string}. "
     else:
         return "You didn't say any filler words!"
     
@@ -104,10 +118,10 @@ def output_wpm(wpm):
         return f'You spoke at {round(wpm)}. Keep up the good pace!'
 
 def main(mp4_file):
-    audio_path = 'extracted_audio.wav'
+    #audio_path = 'extracted_audio.wav'
 
     # Extract audio
-    audio_duration = extract_audio(mp4_file, audio_path)
+    #audio_duration = extract_audio(mp4_file, audio_path)
 
     # Transcribe audio
     transcribed_text = transcribe_audio(audio_path)
@@ -121,7 +135,7 @@ def main(mp4_file):
     print(output_wpm(wpm))
 
     # output the filller words
-    #print(output_filler(transcribed_text))
+    print(output_filler(transcribed_text))
 
 
-main('Test_Recording_1.mp4')
+main('Test_Recording_8.mp4')

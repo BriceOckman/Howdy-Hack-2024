@@ -309,7 +309,7 @@ def fuzzy_search(slide_text_list, transcript_text):
 # print(fuzzy_search(get_text('test_ppt.pptx'), transcript))
 
 
-## JUSTIN'S SECTION ##
+"""## JUSTIN'S SECTION ##
 import os
 from pptx import Presentation
 from pdf2image import convert_from_path
@@ -346,7 +346,7 @@ def pptx_to_png(pptx_path, output_dir):
 
 # Example usage
 pptx_path = 'temp_ppt.pptx'  # Replace with your PowerPoint file path
-output_dir = '/new_frontend/public/path/to'            # Specify your desired output directory
+output_dir = 'new_frontend/public/path/to'            # Specify your desired output directory
 png_files = pptx_to_png(pptx_path, output_dir)
-print("Converted PNG files:", png_files)
+print("Converted PNG files:", png_files)"""
 

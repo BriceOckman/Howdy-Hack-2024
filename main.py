@@ -18,8 +18,29 @@ from fuzzywuzzy import process
 import re
 from collections import Counter
 
-import numpy
+# updating json
 import json
+import numpy
+
+def get_frame_rate(video_file):
+    try:
+        # Use ffmpeg.probe to retrieve metadata about the video file
+        probe = ffmpeg.probe(video_file)
+        
+        # Extract the video stream information
+        video_streams = [stream for stream in probe['streams'] if stream['codec_type'] == 'video']
+        
+        if video_streams:
+            # Get the frame rate from the first video stream
+            frame_rate = eval(video_streams[0]['r_frame_rate'])  # e.g., "30/1"
+            return frame_rate
+        else:
+            print("No video streams found.")
+            return None
+    except ffmpeg.Error as e:
+        print(f"FFmpeg error: {e.stderr.decode()}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def detect_faces_eyes_from_frame(frame, draw=False):
     
@@ -377,3 +398,4 @@ def main(powerpoint_filepath, video_filepath):
     
     with open(os.path.join('backend', 'data', 'slides_data.json'), 'w') as f:
         f.write(json.dumps(data))
+

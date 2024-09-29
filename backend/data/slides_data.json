@@ -1,7 +1,7 @@
 {
-    "retention": [0.95, 0.85, 0.75, 0.60],
-    "time": [0, 5, 10, 15],
-    "slide_changes": [5, 10, 15],
+    "retention": [1, 2, 3, 3, 3, 2, 2, 3, 2, 3, 1, 1],
+    "time": [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60],
+    "slide_changes": [10, 30, 60],
     "slides": [
         "path/to/slide1.png",
         "path/to/slide2.png",

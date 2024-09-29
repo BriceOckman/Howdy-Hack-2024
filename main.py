@@ -217,5 +217,3 @@ def fuzzy_search(slide_text_list, transcript_text):
         else:
             indexes.append(index)
 
-
-

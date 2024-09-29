@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Your Files</h1>
+        <form id="upload-form">
+            <label for="video">Select MP4 File:</label>
+            <input type="file" id="video" name="video" accept=".mp4" required>
+            
+            <label for="presentation">Select PPTX File:</label>
+            <input type="file" id="presentation" name="presentation" accept=".pptx" required>
+            
+            <button type="submit">Upload</button>
+        </form>
+        <div id="error-message" class="error"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

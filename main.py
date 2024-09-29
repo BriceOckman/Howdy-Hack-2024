@@ -8,6 +8,12 @@ import os
 import cv2
 import shutil
 
+# for fuzzy search
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
+import re
+from collections import Counter
+
 def detect_faces_eyes_from_frame(frame, draw=False):
     
     '''
@@ -163,3 +169,27 @@ def get_text(filename, debug=False):
         clean_up(folderpath)
 
 get_text('test_ppt.pptx')
+
+def find_unique(slide_text_list):
+    '''
+    parses through slide_text_list and finds unique words on each slide
+    '''
+    unique_words_sorted = []
+    slide_words = "".join(slide_text_list)
+    words = re.findall(r'\b\w+\b', slide_words.lower())
+    word_counts = (Counter(words))
+    
+    for line in slide_text_list:
+        temp_list = []
+        line_list = line.split(' ')
+        for word in line_list:
+            if 1 == word_counts[word] or word_counts[word] == line_list.count(word):
+                temp_list.append(word)
+            
+        unique_words_sorted.append(temp_list)
+
+def fuzzy_search(slide_text_list, transcript_text):
+    '''
+    
+    '''
+    pass

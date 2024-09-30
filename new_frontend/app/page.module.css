@@ -31,25 +31,28 @@
 }
 
 .graphContainer {
-    width: 1000px; /* Width of the graph */
-    height: 600px; /* Adjusted height to fit the graph better */
+    width: 800px; /* Increase width */
+    height: 400px; /* Increase height */
     position: relative;
     margin-right: 20px; /* Space between graph and text */
     border: 2px solid #d19a6a;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
-    padding: 10px 10px 0 10px; /* Set bottom padding to 0 to reduce space */
+    padding: 10px; /* Maintain padding */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
 }
+
+
 
 .textContainer {
     flex-grow: 1; /* Allow the text area to take remaining space */
     padding: 10px; /* Optional: Add some padding */
-    max-width: 400px; /* Adjust max-width if necessary */
+    max-width: 750px; /* Adjust max-width if necessary */
 }
 
 .imagePopup {
-    width: 840px; /* Increased width */
-    height: 630px; /* Increased height */
+    width: 600px; /* Increased width */
+    height: 350px; /* Increased height */
     padding: 10px;
     border: 3px solid #d19a6a;
     border-radius: 5px;
@@ -72,4 +75,11 @@
 
 .chartjs-render-monitor {
     background: rgba(255, 255, 255, 0.8);
+}
+
+.description {
+    font-size: 20px; /* Increase font size */
+    color: #6b4f3b; /* Keep the text color consistent */
+    margin-left: 20px; /* Space between the graph and the text */
+    line-height: 1.5; /* Improve readability */
 }

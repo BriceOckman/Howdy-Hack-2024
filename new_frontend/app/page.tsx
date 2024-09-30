@@ -49,53 +49,48 @@ const Home = () => {
     };
 
     const options = {
+        responsive: true,
+        maintainAspectRatio: false, // Allows the chart to adjust size
         scales: {
             x: {
                 title: {
                     display: true,
-                    text: 'Time (seconds)', // X-axis label
+                    text: 'Time (seconds)',
                     font: {
-                        size: 20, // Set the font size for the X-axis title
+                        size: 16,
                     },
                 },
                 ticks: {
                     font: {
-                        size: 16, // Set the font size for X-axis ticks
+                        size: 14,
                     },
-                },
-                grid: {
-                    drawOnChartArea: false,
                 },
             },
             y: {
                 title: {
                     display: true,
-                    text: 'Retention (people)', // Y-axis label
+                    text: 'Retention (people)',
                     font: {
-                        size: 20, // Set the font size for the Y-axis title
+                        size: 16,
                     },
                 },
                 ticks: {
                     font: {
-                        size: 16, // Set the font size for Y-axis ticks
+                        size: 14,
                     },
                 },
-                beginAtZero: true,
             },
         },
         plugins: {
             legend: {
                 labels: {
                     font: {
-                        size: 18, // Set the font size for the legend
+                        size: 14,
                     },
                 },
             },
         },
-    };
-    
-    
-    
+    };    
 
     const getSlideUrl = (index: number) => {
         if (!data) return '';
@@ -142,9 +137,18 @@ const Home = () => {
                         />
                     ))}
                 </div>
-                <div className={styles.textContainer}>
+                <div className={`${styles.textContainer} ${styles.description}`}>
                     {/* Add your text content here */}
-                    <p>Your descriptive text goes here.</p>
+                    <p> You stuttered on the words 'like', 'you', 'know', 'do', 
+                        'this', 'also', 'so', and 'happens'. However, practicing mindfulness and slowing down your speech can 
+                        help you gain confidence and improve fluency over time <br /> You spoke at 91 wpm. Add a bit more energy 
+                        to your speech by practicing with a metronome to find a comfortable pace! <br />
+                        You said the following filler words: <br />
+                        'like': 2 <br />
+                        'you know': 3 <br />
+                        'so': 4 <br />
+                        Reducing filler words takes practice; try pausing briefly when you feel the urge to use them—this gives 
+                        you time to think and enhances your clarity!. </p>
                 </div>
             </div>
             {hoveredIndex !== null && data && (

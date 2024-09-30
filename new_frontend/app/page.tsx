@@ -51,15 +51,51 @@ const Home = () => {
     const options = {
         scales: {
             x: {
+                title: {
+                    display: true,
+                    text: 'Time (seconds)', // X-axis label
+                    font: {
+                        size: 20, // Set the font size for the X-axis title
+                    },
+                },
+                ticks: {
+                    font: {
+                        size: 16, // Set the font size for X-axis ticks
+                    },
+                },
                 grid: {
                     drawOnChartArea: false,
                 },
             },
             y: {
+                title: {
+                    display: true,
+                    text: 'Retention (people)', // Y-axis label
+                    font: {
+                        size: 20, // Set the font size for the Y-axis title
+                    },
+                },
+                ticks: {
+                    font: {
+                        size: 16, // Set the font size for Y-axis ticks
+                    },
+                },
                 beginAtZero: true,
             },
         },
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 18, // Set the font size for the legend
+                    },
+                },
+            },
+        },
     };
+    
+    
+    
 
     const getSlideUrl = (index: number) => {
         if (!data) return '';
@@ -85,25 +121,31 @@ const Home = () => {
     return (
         <div className={styles.container}>
             <h1 className={styles.title}>Retention vs. Time Graph</h1>
-            <div className={styles.graphContainer} onMouseMove={handleMouseMove}>
-                {data && (
-                    <Line
-                        data={chartData}
-                        options={options}
-                    />
-                )}
-                {data?.slide_changes.map((change) => (
-                    <div
-                        key={change}
-                        style={{
-                            position: 'absolute',
-                            left: `${((data.time.indexOf(change) / (data.time.length - 1)) * 100)}%`,
-                            height: '100%',
-                            borderLeft: '2px solid #d19a6a', // Light brown for slide changes
-                            top: 0,
-                        }}
-                    />
-                ))}
+            <div className={styles.content}>
+                <div className={styles.graphContainer} onMouseMove={handleMouseMove}>
+                    {data && (
+                        <Line
+                            data={chartData}
+                            options={options}
+                        />
+                    )}
+                    {data?.slide_changes.map((change) => (
+                        <div
+                            key={change}
+                            style={{
+                                position: 'absolute',
+                                left: `${((data.time.indexOf(change) / (data.time.length - 1)) * 100)}%`,
+                                height: '100%',
+                                borderLeft: '2px solid #d19a6a',
+                                top: 0,
+                            }}
+                        />
+                    ))}
+                </div>
+                <div className={styles.textContainer}>
+                    {/* Add your text content here */}
+                    <p>Your descriptive text goes here.</p>
+                </div>
             </div>
             {hoveredIndex !== null && data && (
                 <div className={styles.imagePopup}>
@@ -114,7 +156,7 @@ const Home = () => {
                 </div>
             )}
         </div>
-    );
+    );    
 };
 
 export default Home;

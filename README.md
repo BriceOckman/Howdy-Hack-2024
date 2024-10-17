@@ -26,8 +26,8 @@ The program also utilizes OpenCV to track the eyes. Based on how many people are
 
 With the audio file, we are also able to pull repeated words, words per minute, and filler words. Through this, we can use AI to "coach" the user, telling them to stop repeating/stuttering, slow/speed up their words per minute, or take out filler words.
 
-
 All of the backend/AI/CV/data storage done in Python/Flask. The frontend was done using Next.js
+
  <img width="1679" alt="image" src="https://github.com/user-attachments/assets/2c7b9787-19fc-4850-bc94-686f2e745164">
 
 ## Future implementations
